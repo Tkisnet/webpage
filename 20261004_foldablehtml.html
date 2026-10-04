@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foldable Web Demo</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    line-height: 1.6;
+    color: #24324a;
+    background: #f4f6fa;
+  }
+  main { display: grid; }
+  section {
+    min-width: 0;
+    margin: 12px;
+    padding: 24px;
+    overflow-wrap: anywhere;
+    border: 2px solid #7283a0;
+    border-radius: 16px;
+    background: #fff;
+  }
+  h1, h2 { margin: 0 0 12px; font-size: 1.5rem; }
+  p { margin: 0; }
+  #first { border-color: #506db0; background: #eef3ff; }
+  #second { border-color: #36786b; background: #edf8f4; }
+  #posture {
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 0.9rem;
+  }
+  @media (horizontal-viewport-segments: 2) and
+         (vertical-viewport-segments: 1) {
+    main {
+      grid-template-columns:
+        env(viewport-segment-width 0 0)
+        calc(env(viewport-segment-left 1 0) -
+             env(viewport-segment-right 0 0))
+        env(viewport-segment-width 1 0);
+    }
+    #first { grid-column: 1; grid-row: 1; }
+    #second { grid-column: 3; grid-row: 1; }
+  }
+  @media (horizontal-viewport-segments: 1) and
+         (vertical-viewport-segments: 2) {
+    main {
+      grid-template-rows:
+        env(viewport-segment-height 0 0)
+        calc(env(viewport-segment-top 0 1) -
+             env(viewport-segment-bottom 0 0))
+        env(viewport-segment-height 0 1);
+    }
+    section { overflow: auto; }
+    #first { grid-row: 1; }
+    #second { grid-row: 3; }
+  }
+  @media (device-posture: folded) {
+    section { border-style: dashed; }
+  }
+</style>
+<main>
+  <section id="first">
+    <h1>領域 A</h1>
+    <p id="posture">Device Posture APIを確認中</p>
+  </section>
+  <section id="second">
+    <h2>領域 B</h2>
+    <p>2領域のときは区切りを挟んで配置します。</p>
+  </section>
+</main>
+<script>
+  const label = document.querySelector('#posture');
+  const posture = navigator.devicePosture;
+  if (posture) {
+    const update = () => {
+      label.textContent = `posture: ${posture.type}`;
+    };
+    update();
+    posture.addEventListener('change', update);
+  } else {
+    label.textContent = 'Device Posture APIはこのページで利用できません';
+  }
+</script>
+</html>
